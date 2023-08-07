@@ -40,7 +40,7 @@ services:
     networks:
       - ngx_demo_network
     volumes:
-      - ./app.py:/app/app.py:ro
+      - ../app.py:/app/app.py:ro
     environment:
       SERVER_NAME: "app-2"
       DELAY: "2"

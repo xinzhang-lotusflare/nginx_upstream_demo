@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server
+spec:
+  selector:
+    matchLabels:
+      app: server
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      terminationGracePeriodSeconds: 20
+      containers:
+      - name: server
+        # It runs the app.py script, which implemented a HTTP service listenning 8000 port
+        image: registry:5000/delayed-server:0.0.1
+        resources:
+          limits:
+            cpu: 50m
+            memory: 200Mi
+          requests:
+            cpu: 50m
+            memory: 200Mi
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DELAY
+          value: "5"
+      - name: sidecar
+        # use this container to curl python app running in main container
+        image: registry:5000/python:3.11.4
+        resources:
+          limits:
+            cpu: 10m
+            memory: 10Mi
+          requests:
+            cpu: 10m
+            memory: 10Mi
+        command:
+          - "/bin/bash"
+          - "-c"
+          - |
+            sleep infinity
